@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "358785041168",
+    "project_id": "graphs1-602ab",
+    "storage_bucket": "graphs1-602ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358785041168:android:89c16e4f2d0e6ff204db95",
+        "android_client_info": {
+          "package_name": "com.example.student_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "358785041168-0re5ucvchkq5t2584m30hu33t144ab9h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASk9cD60gobyshuKytxUETyIl8q5aGzns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "358785041168-0re5ucvchkq5t2584m30hu33t144ab9h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
