@@ -13,14 +13,14 @@ class SalesHomePage extends StatefulWidget {
 }
 
 class _SalesHomePageState extends State<SalesHomePage> {
-  List<charts.Series<Sales, String>> _seriesLineData;
+  List<charts.Series<Sales, int>> _seriesLineData;
   List<Sales> mydata;
   _generateData(mydata) {
     //data being stored
-    _seriesLineData = List<charts.Series<Sales, String>>();
+    _seriesLineData = List<charts.Series<Sales, int>>();
     _seriesLineData.add(
       charts.Series(
-        domainFn: (Sales sales, _) => sales.saleYear.toString(),
+        domainFn: (Sales sales, _) => sales.saleYear,
         measureFn: (Sales sales, _) => sales.saleVal,
         colorFn: (Sales sales, _) =>
             charts.ColorUtil.fromDartColor(Color(int.parse(sales.colorVal))),

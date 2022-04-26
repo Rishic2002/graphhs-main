@@ -1,6 +1,6 @@
 class Sales {
   final int saleVal;
-  final String saleYear;
+  final int saleYear;
   final String colorVal;
   Sales(this.saleVal, this.saleYear, this.colorVal);
 
