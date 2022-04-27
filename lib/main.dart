@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'salehomepage.dart'; //linegraph
+import 'atthomepage.dart'; //linegraph
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: SalesHomePage(),
-      //home: LineHomePage(),//linegraph
+      home: ATTHomePage(),
     );
   }
 }
