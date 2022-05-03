@@ -12,18 +12,19 @@ class ATTHomePage extends StatefulWidget {
 }
 
 class Att {
-  final int AttVal;
-  final int attMonth;
-  final String colorVal;
-  Att(this.AttVal, this.attMonth, this.colorVal);
+  final int Present;
+  final DateTime date;
+ 
+  Att(this.Present, this.date);
 
-  Att.fromMap(Map<String, dynamic> map)
-      : AttVal = map['AttVal'],
-        colorVal = map['colorVal'],
-        attMonth = map['attMonth'];
+  Att.fromMap(Map<String, Timestamp > map)
+      : Present = map['Present'],
+        
 
-  @override
-  String toString() => "Record<$attMonth:$colorVal>";
+       date = map['date'];
+
+ 
+ 
 }
 
 class _ATTHomePageState extends State<ATTHomePage> {
@@ -34,10 +35,9 @@ class _ATTHomePageState extends State<ATTHomePage> {
     _seriesLineData = List<charts.Series<Att, int>>();
     _seriesLineData.add(
       charts.Series(
-        domainFn: (Att ATTENDANCE, _) => ATTENDANCE.attMonth,
-        measureFn: (Att ATTENDANCE, _) => ATTENDANCE.AttVal,
-        colorFn: (Att ATTENDANCE, _) => charts.ColorUtil.fromDartColor(
-            Color(int.parse(ATTENDANCE.colorVal))),
+        domainFn: (Att ATTENDANCE, _) => ATTENDANCE.Present,
+        measureFn: (Att ATTENDANCE, _) => ATTENDANCE.date,
+       
         id: 'ATTENDANCE',
         data: mydata,
         labelAccessorFn: (Att row, _) => "${row.attMonth}", //xaxis
