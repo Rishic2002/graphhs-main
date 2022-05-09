@@ -1,45 +1,44 @@
-// ignore_for_file: deprecated_member_use, unused_element
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
-class SalesHomePage extends StatefulWidget {
+class ATTHomePage extends StatefulWidget {
   @override
-  _SalesHomePageState createState() {
-    return _SalesHomePageState();
+  _ATTHomePageState createState() {
+    return _ATTHomePageState();
   }
 }
 
-class Sales {
+class Att {
   final int attVal;
-  final String attmonth;
+  final int attmonth;
   final String colorVal;
-  Sales(this.attVal, this.attmonth, this.colorVal);
+  Att(this.attVal, this.attmonth, this.colorVal);
 
-  Sales.fromMap(Map<String, dynamic> map)
+  Att.fromMap(Map<dynamic, dynamic> map)
       : attVal = map['attVal'],
         colorVal = map['colorVal'],
         attmonth = map['attmonth'];
 
   @override
-  String toString() => "Record<$attVal:$attmonth:$colorVal>";
+  String toString() => "Record<$attmonth:$colorVal>";
 }
 
-class _SalesHomePageState extends State<SalesHomePage> {
-  List<charts.Series<Sales, String>> _seriesBarData;
-  List<Sales> mydata;
+class _ATTHomePageState extends State<ATTHomePage> {
+  List<charts.Series<Att, int>> _seriesLineData;
+  List<Att> mydata;
   _generateData(mydata) {
-    _seriesBarData = List<charts.Series<Sales, String>>();
-    _seriesBarData.add(
+    //data being stored
+    _seriesLineData = List<charts.Series<Att, int>>();
+    _seriesLineData.add(
       charts.Series(
-        domainFn: (Sales sales, _) => sales.attmonth.toString(),
-        measureFn: (Sales sales, _) => sales.attVal,
-        colorFn: (Sales sales, _) =>
-            charts.ColorUtil.fromDartColor(Color(int.parse(sales.colorVal))),
+        domainFn: (Att att, _) => att.attmonth,
+        measureFn: (Att att, _) => att.attVal,
+        colorFn: (Att att, _) =>
+            charts.ColorUtil.fromDartColor(Color(int.parse(att.colorVal))),
         id: 'att',
         data: mydata,
-        labelAccessorFn: (Sales row, _) => "${row.attmonth}",
+        labelAccessorFn: (Att row, _) => "${row.attmonth}", //xaxis
       ),
     );
   }
@@ -47,7 +46,7 @@ class _SalesHomePageState extends State<SalesHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Sales')),
+      appBar: AppBar(title: Text('WELCOME')),
       body: _buildBody(context),
     );
   }
@@ -59,17 +58,17 @@ class _SalesHomePageState extends State<SalesHomePage> {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
         } else {
-          List<Sales> sales = snapshot.data.docs
-              .map((docsSnapshot) => Sales.fromMap(docsSnapshot.data()))
+          List<Att> att = snapshot.data.docs
+              .map((docsSnapshot) => Att.fromMap(docsSnapshot.data()))
               .toList();
-          return _buildChart(context, sales);
+          return _buildChart(context, att);
         }
       },
     );
   }
 
-  Widget _buildChart(BuildContext context, List<Sales> saledata) {
-    mydata = saledata;
+  Widget _buildChart(BuildContext context, List<Att> Attdata) {
+    mydata = Attdata;
     _generateData(mydata);
     return Padding(
       padding: EdgeInsets.all(8.0),
@@ -78,27 +77,40 @@ class _SalesHomePageState extends State<SalesHomePage> {
           child: Column(
             children: <Widget>[
               Text(
-                'ATTENDANCE',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+                'att BY MONTH',
+                style: TextStyle(fontSize: 24.0, fontFamily: 'RobotoMono'),
               ),
               SizedBox(
-                height: 10.0,
-              ),
-              Expanded(
-                child: charts.BarChart(
-                  _seriesBarData,
-                  animate: true,
-                  animationDuration: Duration(seconds: 5),
-                  behaviors: [
-                    new charts.DatumLegend(
-                      entryTextStyle: charts.TextStyleSpec(
-                          color: charts.MaterialPalette.purple.shadeDefault,
-                          fontFamily: 'Georgia',
-                          fontSize: 18),
-                    )
-                  ],
-                ),
-              ),
+                  width: 900,
+                  height: 400,
+                  child: Card(
+                    child: Expanded(
+                      child: charts.LineChart(
+                        _seriesLineData,
+                        animate: true,
+                        defaultRenderer:
+                            new charts.LineRendererConfig(includePoints: true),
+                        //POINTS
+                        animationDuration:
+                            Duration(seconds: 5), //DURATION OF ANIMATION
+                        behaviors: [
+                          new charts.SeriesLegend(
+                            position: charts.BehaviorPosition.end,
+                            outsideJustification:
+                                charts.OutsideJustification.endDrawArea,
+                            horizontalFirst: false,
+                            desiredMaxRows: 2,
+                            cellPadding:
+                                new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                            entryTextStyle: charts.TextStyleSpec(
+                                color: charts.Color(r: 127, g: 63, b: 191),
+                                fontFamily: 'Georgia',
+                                fontSize: 11),
+                          )
+                        ],
+                      ),
+                    ),
+                  ))
             ],
           ),
         ),
