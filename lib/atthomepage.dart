@@ -4,43 +4,42 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
-class ATTHomePage extends StatefulWidget {
+class SalesHomePage extends StatefulWidget {
   @override
-  _ATTHomePageState createState() {
-    return _ATTHomePageState();
+  _SalesHomePageState createState() {
+    return _SalesHomePageState();
   }
 }
 
-class Att {
-  final int Present;
-  final DateTime date;
- 
-  Att(this.Present, this.date);
+class Sales {
+  final int attVal;
+  final String attmonth;
+  final String colorVal;
+  Sales(this.attVal, this.attmonth, this.colorVal);
 
-  Att.fromMap(Map<String, Timestamp > map)
-      : Present = map['Present'],
-        
+  Sales.fromMap(Map<String, dynamic> map)
+      : attVal = map['attVal'],
+        colorVal = map['colorVal'],
+        attmonth = map['attmonth'];
 
-       date = map['date'];
-
- 
- 
+  @override
+  String toString() => "Record<$attVal:$attmonth:$colorVal>";
 }
 
-class _ATTHomePageState extends State<ATTHomePage> {
-  List<charts.Series<Att, int>> _seriesLineData;
-  List<Att> mydata;
+class _SalesHomePageState extends State<SalesHomePage> {
+  List<charts.Series<Sales, String>> _seriesBarData;
+  List<Sales> mydata;
   _generateData(mydata) {
-    //data being stored
-    _seriesLineData = List<charts.Series<Att, int>>();
-    _seriesLineData.add(
+    _seriesBarData = List<charts.Series<Sales, String>>();
+    _seriesBarData.add(
       charts.Series(
-        domainFn: (Att ATTENDANCE, _) => ATTENDANCE.Present,
-        measureFn: (Att ATTENDANCE, _) => ATTENDANCE.date,
-       
-        id: 'ATTENDANCE',
+        domainFn: (Sales sales, _) => sales.attmonth.toString(),
+        measureFn: (Sales sales, _) => sales.attVal,
+        colorFn: (Sales sales, _) =>
+            charts.ColorUtil.fromDartColor(Color(int.parse(sales.colorVal))),
+        id: 'att',
         data: mydata,
-        labelAccessorFn: (Att row, _) => "${row.attMonth}", //xaxis
+        labelAccessorFn: (Sales row, _) => "${row.attmonth}",
       ),
     );
   }
@@ -48,29 +47,29 @@ class _ATTHomePageState extends State<ATTHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('WELCOME')),
+      appBar: AppBar(title: Text('Sales')),
       body: _buildBody(context),
     );
   }
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('ATTENDANCE').snapshots(),
+      stream: FirebaseFirestore.instance.collection('att').snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
         } else {
-          List<Att> ATTENDANCE = snapshot.data.docs
-              .map((docsSnapshot) => Att.fromMap(docsSnapshot.data()))
+          List<Sales> sales = snapshot.data.docs
+              .map((docsSnapshot) => Sales.fromMap(docsSnapshot.data()))
               .toList();
-          return _buildChart(context, ATTENDANCE);
+          return _buildChart(context, sales);
         }
       },
     );
   }
 
-  Widget _buildChart(BuildContext context, List<Att> Attdata) {
-    mydata = Attdata;
+  Widget _buildChart(BuildContext context, List<Sales> saledata) {
+    mydata = saledata;
     _generateData(mydata);
     return Padding(
       padding: EdgeInsets.all(8.0),
@@ -79,141 +78,26 @@ class _ATTHomePageState extends State<ATTHomePage> {
           child: Column(
             children: <Widget>[
               Text(
-                'ATTENDANCE BY MONTH',
-                style: TextStyle(fontSize: 24.0, fontFamily: 'RobotoMono'),
-              ),
-              SizedBox(
-                  width: 900,
-                  height: 400,
-                  child: Card(
-                    child: Expanded(
-                      child: charts.LineChart(
-                        _seriesLineData,
-                        animate: true,
-                        defaultRenderer:
-                            new charts.LineRendererConfig(includePoints: true),
-                        //POINTS
-                        animationDuration:
-                            Duration(seconds: 5), //DURATION OF ANIMATION
-                        behaviors: [
-                          new charts.SeriesLegend(
-                            position: charts.BehaviorPosition.end,
-                            outsideJustification:
-                                charts.OutsideJustification.endDrawArea,
-                            horizontalFirst: false,
-                            desiredMaxRows: 2,
-                            cellPadding:
-                                new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                            entryTextStyle: charts.TextStyleSpec(
-                                color: charts.Color(r: 127, g: 63, b: 191),
-                                fontFamily: 'Georgia',
-                                fontSize: 11),
-                          )
-                        ],
-                      ),
-                    ),
-                  ))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/*
-//GAUGE
-class Percent {
-  final int taskVal;
-  final String taskDetails;
-  final String colorVal;
-  Percent(this.taskDetails, this.taskVal, this.colorVal);
-
-  Percent.fromMap(Map<String, dynamic> map)
-      : 
-        taskDetails = map['taskdetails'],
-        taskVal = map['taskVal'],
-        colorVal = map['colorVal'];
-
-  @override
-  String toString() => "Record<$taskVal:$taskDetails>";
-}
-
-class ATTHomePageState extends State<ATTHomePage> {
-  List<charts.Series<Percent, String>> _seriesPieData;
-  List<Percent> mydata;
-  _generateGaugeData(myGaugedata) {
-    _seriesPieData = List<charts.Series<Percent, String>>();
-    _seriesPieData.add(
-      charts.Series(
-        domainFn: (Percent percent, _) => Percent.taskDetails,
-        measureFn: (Percent percent, _) => Percent.taskVal,
-        colorFn: (Percent percent, _) =>
-            charts.ColorUtil.fromDartColor(Color(int.parse(percent.colorVal))),
-        id: 'tasks',
-        data: mydata,
-        labelAccessorFn: (Percent row, _) => "${row.taskVal}",
-      ),
-    );
-  }
-
- 
-  Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('Percent').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return LinearProgressIndicator();
-        } else {
-          List<Percent> Percent = snapshot.data.docs
-              .map((docsSnapshot) => Percent.fromMap(docsSnapshot.data()))
-              .toList();
-          return _buildGauge(context, Percent);
-        }
-      },
-    );
-  }
-
-  /*Widget _buildChart(BuildContext context, List<Percent> Gaugedata) {
-    myGaugedata = taskdata;
-    _generateData(myGaugedata);
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Container(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Text(
-                'Time spent on daily tasks',
+                'ATTENDANCE',
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: 10.0,
               ),
               Expanded(
-                child: charts.PieChart(_seriesPieData,
-                    animate: true,
-                    animationDuration: Duration(seconds: 5),
-                    behaviors: [
-                      new charts.DatumLegend(
-                        outsideJustification:
-                            charts.OutsideJustification.endDrawArea,
-                        horizontalFirst: false,
-                        desiredMaxRows: 2,
-                        cellPadding: new EdgeInsets.only(
-                            right: 4.0, bottom: 4.0, top: 4.0),
-                        entryTextStyle: charts.TextStyleSpec(
-                            color: charts.MaterialPalette.purple.shadeDefault,
-                            fontFamily: 'Georgia',
-                            fontSize: 18),
-                      )
-                    ],
-                    defaultRenderer: new charts.ArcRendererConfig(
-                        arcWidth: 100,
-                        arcRendererDecorators: [
-                          new charts.ArcLabelDecorator(
-                              labelPosition: charts.ArcLabelPosition.inside)
-                        ])),
+                child: charts.BarChart(
+                  _seriesBarData,
+                  animate: true,
+                  animationDuration: Duration(seconds: 5),
+                  behaviors: [
+                    new charts.DatumLegend(
+                      entryTextStyle: charts.TextStyleSpec(
+                          color: charts.MaterialPalette.purple.shadeDefault,
+                          fontFamily: 'Georgia',
+                          fontSize: 18),
+                    )
+                  ],
+                ),
               ),
             ],
           ),
@@ -221,10 +105,4 @@ class ATTHomePageState extends State<ATTHomePage> {
       ),
     );
   }
-*/
-  @override
-  Widget build(BuildContext context) {
-    throw UnimplementedError();
-  }
 }
-*/
