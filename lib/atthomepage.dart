@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -15,13 +17,13 @@ class Att {
   final String colorVal;
   Att(this.attVal, this.attmonth, this.colorVal);
 
-  Att.fromMap(Map<dynamic, dynamic> map)
+  Att.fromMap(Map<String, dynamic> map)
       : attVal = map['attVal'],
         colorVal = map['colorVal'],
         attmonth = map['attmonth'];
 
   @override
-  String toString() => "Record<$attmonth:$colorVal>";
+  String toString() => "Record<$colorVal>";
 }
 
 class _ATTHomePageState extends State<ATTHomePage> {
