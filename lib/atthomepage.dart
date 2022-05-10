@@ -1,9 +1,8 @@
-// ignore_for_file: deprecated_member_use, unused_import
+// ignore_for_file: deprecated_member_use
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:cupertino_icons/cupertino_icons.dart';
 
 class ATTHomePage extends StatefulWidget {
   @override
@@ -13,18 +12,18 @@ class ATTHomePage extends StatefulWidget {
 }
 
 class Att {
-  final int attVal;
-  final int attmonth;
-  final String colorVal;
-  Att(this.attVal, this.attmonth, this.colorVal);
+  final int month;
+  final int present;
+  final String name;
+  Att(this.month, this.present, this.name);
 
   Att.fromMap(Map<String, dynamic> map)
-      : attVal = map['attVal'],
-        colorVal = map['colorVal'],
-        attmonth = map['attmonth'];
+      : month = map['month'],
+        name = map['name'],
+        present = map['present'];
 
   @override
-  String toString() => "Record<$colorVal>";
+  String toString() => "Record<$name>";
 }
 
 class _ATTHomePageState extends State<ATTHomePage> {
@@ -35,28 +34,34 @@ class _ATTHomePageState extends State<ATTHomePage> {
     _seriesLineData = List<charts.Series<Att, int>>();
     _seriesLineData.add(
       charts.Series(
-        domainFn: (Att att, _) => att.attmonth,
-        measureFn: (Att att, _) => att.attVal,
-        colorFn: (Att att, _) =>
-            charts.ColorUtil.fromDartColor(Color(int.parse(att.colorVal))),
+        domainFn: (Att att, _) => att.month,
+        measureFn: (Att att, _) => att.present,
         id: 'att',
         data: mydata,
-        labelAccessorFn: (Att row, _) => "${row.attmonth}", //xaxis
+        labelAccessorFn: (Att row, _) => "${row.month}", //xaxis
       ),
     );
+  }
+
+  Stream<QuerySnapshot> getGraphSnapshots(BuildContext context) async* {
+    yield* FirebaseFirestore.instance
+        .collection('abc')
+        .doc('CrWQ7xDo9eh9rR1SujpB')
+        .collection('attendance')
+        .where('month', isLessThanOrEqualTo: 9)
+        .snapshots();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('WELCOME')),
       body: _buildBody(context),
     );
   }
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('att').snapshots(),
+      stream: getGraphSnapshots(context),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -85,6 +90,7 @@ class _ATTHomePageState extends State<ATTHomePage> {
               indicatorColor: Color(0xff9962D0),
               tabs: [
                 Tab(
+                  text: "9M",
                   icon: new Icon(Icons.bookmark),
                 ),
                 Tab(
