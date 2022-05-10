@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "358785041168",
+    "firebase_url": "https://graphs1-602ab-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "graphs1-602ab",
     "storage_bucket": "graphs1-602ab.appspot.com"
   },
@@ -29,6 +30,13 @@
             {
               "client_id": "358785041168-0re5ucvchkq5t2584m30hu33t144ab9h.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "358785041168-9jeo4dkm4ej688hk03vd66hlff8o8av4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterChartJson"
+              }
             }
           ]
         }
